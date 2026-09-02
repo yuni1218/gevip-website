@@ -115,7 +115,7 @@ a:hover { text-decoration: underline; }
 .wordmark:hover { text-decoration: none; color: var(--gold); }
 
 .logo-img {
-  height: 36px;
+  height: 28px;
   width: auto;
   display: block;
 }
@@ -349,6 +349,7 @@ a:hover { text-decoration: underline; }
 
 .staff-name { font-weight: 600; margin-bottom: 2px; }
 .staff-role { color: var(--text-muted); font-size: 0.9rem; }
+
 
 /* ===================================================================
    Alumni
