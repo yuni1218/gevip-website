@@ -232,10 +232,7 @@ a:hover { text-decoration: underline; }
 }
 .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
 
-.hero-figure {
-  display: flex;
-  justify-content: center;
-}
+
 .spectrum-svg {
   width: 100%;
   max-width: 440px;
