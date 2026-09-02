@@ -178,11 +178,16 @@ a:hover { text-decoration: underline; }
   align-items: center;
 }
 
-.hero-logo {
-  height: 72px;
+.eyebrow-label {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--gold);
+}
+
+.eyebrow-logo {
+  height: 20px;
   width: auto;
   display: block;
-  margin-bottom: 24px;
 }
 
 .eyebrow-label {
