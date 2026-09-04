@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Galaxy Evolution VIP — an interactive astronomy research experience at UT Austin." />
+  <title>GEVIP — Galaxy Evolution VIP</title>
+
+  <style>
+    :root{
+      --bg:#05040b;
+      --bg2:#090719;
+      --panel:rgba(14,10,31,.72);
+      --panel-strong:rgba(20,14,43,.92);
+      --purple:#8b5cf6;
+      --purple-2:#c4a7ff;
+      --purple-3:#5b21b6;
+      --ink:#f7f5ff;
+      --muted:#bdb6d4;
+      --line:rgba(190,166,255,.22);
+      --white:#ffffff;
+      --max:1240px;
+      --shadow:0 24px 80px rgba(0,0,0,.42);
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(139,92,246,.10), transparent 34%),
+        radial-gradient(circle at 82% 25%, rgba(88,28,135,.13), transparent 32%),
+        linear-gradient(180deg,#05040a 0%, #07060d 54%, #030208 100%);
+      color:var(--ink);
+      font-family: "Times New Roman", Times, serif;
+      overflow-x:hidden;
+    }
+
+    .nav,.eyebrow,.btn,.micro,.section-kicker,.project .id,.stage-year,
+    .brand-sub,.modal-id,.meta small,footer,.galaxy-label,.project p{
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a{color:inherit;text-decoration:none}
+    button{font:inherit}
+
+    /* --------- universal cosmic layers --------- */
+    #starfield{
+      position:fixed; inset:0; width:100%; height:100%;
+      z-index:-5; pointer-events:none;
+      opacity:.9;
+    }
+    .nebula{
+      position:fixed; inset:auto;
+      width:50vw; height:50vw; max-width:850px; max-height:850px;
+      border-radius:50%;
+      filter:blur(55px);
+      opacity:.10; pointer-events:none; z-index:-4;
+      background:radial-gradient(circle, rgba(139,92,246,.9), transparent 68%);
+      animation:drift 18s ease-in-out infinite alternate;
+    }
+    .nebula.n1{top:4vh; left:-16vw}
+    .nebula.n2{top:48vh; right:-20vw; animation-delay:-6s}
+    @keyframes drift{to{transform:translate3d(5vw,2vh,0) scale(1.08)}}
+
+    .container{width:min(var(--max), calc(100% - 40px)); margin:0 auto}
+
+    /* --------- top navigation --------- */
+    .nav{
+      position:fixed; top:14px; left:50%; transform:translateX(-50%);
+      width:min(1160px, calc(100% - 24px));
+      z-index:50;
+      padding:10px 12px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(5,4,11,.62);
+      backdrop-filter:blur(18px) saturate(135%);
+      box-shadow:0 12px 40px rgba(0,0,0,.26);
+    }
+    .nav-inner{display:flex; align-items:center; justify-content:space-between; gap:16px}
+    .brand{display:flex; align-items:center; gap:10px; min-width:0}
+    .brand img{
+      width:38px;height:38px;object-fit:cover;border-radius:50%;
+      filter:drop-shadow(0 0 16px rgba(139,92,246,.4));
+    }
+    .brand-copy{display:flex;flex-direction:column;line-height:1}
+    .brand-title{font-size:.98rem;font-weight:850;letter-spacing:.18em}
+    .brand-sub{font-size:.59rem;color:#a59dbc;letter-spacing:.16em;text-transform:uppercase;margin-top:4px}
+    .nav-links{display:flex; gap:5px; align-items:center}
+    .nav-links a,.nav-links button{
+      color:#d8d2e7; background:none;border:0;cursor:pointer;
+      font-size:.79rem;font-weight:700;padding:10px 12px;border-radius:999px;
+    }
+    .nav-links a:hover,.nav-links button:hover{background:rgba(139,92,246,.12);color:#fff}
+    @media(max-width:820px){
+      .nav-links a:nth-child(3){display:none}
+      .brand-sub{display:none}
+      .nav{top:8px}
+    }
+
+    /* --------- hero / observatory --------- */
+    .hero{
+      min-height:100svh;
+      display:grid; place-items:center;
+      position:relative; isolation:isolate;
+      padding:120px 0 70px;
+    }
+    .hero-grid{
+      display:grid;
+      grid-template-columns: .92fr 1.08fr;
+      gap:42px; align-items:center;
+    }
+    @media(max-width:960px){.hero-grid{grid-template-columns:1fr}}
+    .eyebrow{
+      display:inline-flex; align-items:center; gap:9px;
+      color:#d5c7ff;
+      font-size:.72rem; font-weight:800; letter-spacing:.18em; text-transform:uppercase;
+      padding:8px 11px; border:1px solid var(--line); border-radius:999px;
+      background:rgba(139,92,246,.07);
+    }
+    .eyebrow .pulse{
+      width:7px;height:7px;border-radius:50%;background:var(--purple);
+      box-shadow:0 0 0 5px rgba(139,92,246,.11), 0 0 22px rgba(139,92,246,.8);
+      animation:pulse 2.2s infinite ease-out;
+    }
+    @keyframes pulse{0%,100%{transform:scale(.95);opacity:.85}50%{transform:scale(1.15);opacity:1}}
+    h1{
+      margin:18px 0 18px;
+      font-size:clamp(4rem, 8vw, 7.6rem);
+      line-height:.88;
+      letter-spacing:-.055em;
+      font-weight:700;
+    }
+    .gradient{
+      background:linear-gradient(100deg,#fff 2%, #d9ccff 42%, #9b6cff 80%);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .hero-lede{
+      color:#d2ccde; font-size:clamp(1rem,1.55vw,1.2rem); line-height:1.72;
+      max-width:630px;
+    }
+    .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:27px}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:9px;
+      border-radius:999px;padding:13px 17px;font-weight:850;font-size:.84rem;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05); color:#fff; cursor:pointer;
+      transition:.25s ease;
+    }
+    .btn:hover{transform:translateY(-2px);border-color:rgba(196,167,255,.45);background:rgba(139,92,246,.12)}
+    .btn.primary{background:var(--purple);border-color:transparent;box-shadow:0 12px 34px rgba(139,92,246,.28)}
+    .btn.primary:hover{background:#9568ff;box-shadow:0 18px 42px rgba(139,92,246,.38)}
+    .micro{
+      margin-top:19px; color:#8f87a6; font-size:.74rem;
+      display:flex;gap:10px;align-items:center;
+    }
+    .micro::before{content:"";width:34px;height:1px;background:rgba(196,167,255,.35)}
+
+    /* Interactive galaxy */
+    .orbit-wrap{
+      position:relative; min-height:540px; display:grid; place-items:center;
+    }
+    .galaxy{
+      width:min(500px, 80vw); aspect-ratio:1; position:relative;
+      border-radius:50%;
+      transform-style:preserve-3d;
+      animation:float 8s ease-in-out infinite;
+      filter:drop-shadow(0 0 55px rgba(139,92,246,.23));
+    }
+    @keyframes float{50%{transform:translateY(-10px) rotateX(4deg)}}
+    .galaxy::before{
+      content:"";position:absolute;inset:8%;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at 48% 48%, #fff 0 1.2%, rgba(255,232,252,.95) 1.8%, rgba(202,157,255,.72) 4%, transparent 11%),
+        conic-gradient(from 15deg, transparent 0 9%, rgba(139,92,246,.65) 14%, transparent 25%, rgba(169,124,255,.45) 35%, transparent 48%, rgba(139,92,246,.62) 59%, transparent 71%, rgba(197,173,255,.4) 84%, transparent 94%),
+        radial-gradient(ellipse at center, rgba(168,126,255,.45), rgba(83,41,151,.20) 42%, transparent 72%);
+      filter:blur(1px);
+      box-shadow: inset 0 0 50px rgba(255,255,255,.06);
+    }
+    .galaxy::after{
+      content:"";position:absolute;inset:24% 5%;
+      border-radius:50%;
+      border:1px solid rgba(210,188,255,.24);
+      transform:rotate(-19deg);
+      box-shadow:
+        0 0 34px rgba(139,92,246,.2),
+        0 0 90px rgba(139,92,246,.12);
+      animation:spin 18s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(341deg)}}
+
+    .orbit{
+      position:absolute;inset:6% 12%;
+      border:1px solid rgba(202,183,255,.23);
+      border-radius:50%; transform:rotate(-19deg);
+    }
+    .orbit.o2{inset:16% 4%;transform:rotate(17deg)}
+    .orbit.o3{inset:28% 0%;transform:rotate(82deg);opacity:.48}
+    .research-node{
+      position:absolute;
+      width:70px;height:70px;
+      border-radius:50%;
+      border:1px solid rgba(231,224,255,.45);
+      background:radial-gradient(circle at 36% 32%, #fff 0 4%, #e2cdff 11%, #9b6cff 29%, #3b176e 62%, #10051f 100%);
+      box-shadow:0 0 30px rgba(139,92,246,.62), 0 0 90px rgba(139,92,246,.28);
+      cursor:pointer;
+      transition:transform .25s ease, box-shadow .25s ease;
+      display:grid; place-items:center;
+      color:#fff; font-weight:900; font-size:.66rem;
+      text-align:center; padding:8px; z-index:3;
+    }
+    .research-node:hover{transform:scale(1.12);box-shadow:0 0 40px rgba(139,92,246,.78),0 0 110px rgba(139,92,246,.34)}
+    .research-node.n1{top:6%;left:11%}
+    .research-node.n2{top:15%;right:8%}
+    .research-node.n3{right:0;bottom:29%}
+    .research-node.n4{left:4%;bottom:20%}
+    .research-node.n5{left:39%;top:0}
+    .research-node.n6{right:31%;bottom:0}
+    .galaxy-label{
+      position:absolute;right:0;bottom:10px;
+      max-width:240px;padding:12px 13px;border:1px solid var(--line);border-radius:16px;
+      background:rgba(8,5,18,.72);backdrop-filter:blur(15px);
+      font-size:.72rem;color:#c8c0d6;line-height:1.5;box-shadow:var(--shadow)
+    }
+    .galaxy-label strong{color:#fff;display:block;font-size:.78rem;margin-bottom:3px}
+
+
+    /* --------- editorial hero / real Webb image --------- */
+    .hero{
+      min-height:100svh;
+      padding:0;
+      position:relative;
+      isolation:isolate;
+    }
+    .hero-cosmos{
+      position:relative;
+      min-height:100svh;
+      display:flex;
+      align-items:center;
+      overflow:hidden;
+      background:#020205;
+    }
+    .hero-image{
+      position:absolute; inset:0;
+      background-image:
+        linear-gradient(90deg, rgba(2,2,5,.88) 0%, rgba(2,2,5,.48) 30%, rgba(2,2,5,.08) 63%, rgba(2,2,5,.62) 100%),
+        linear-gradient(180deg, rgba(2,2,5,.74) 0%, rgba(2,2,5,.06) 28%, rgba(2,2,5,.14) 58%, rgba(2,2,5,.92) 100%),
+        url("https://assets.science.nasa.gov/dynamicimage/assets/science/missions/webb/science/2024/01/STScI-01HM9Z5J33EJWZ00GHCG7T3VE4.png?crop=faces%2Cfocalpoint&fit=clip&h=2088&w=3445");
+      background-size:cover;
+      background-position:center center;
+      transform:scale(1.03);
+      filter:saturate(.93) contrast(1.03) brightness(.82);
+      transition:transform 1.2s cubic-bezier(.2,.7,.2,1);
+    }
+    .hero-vignette{
+      position:absolute; inset:0;
+      background:
+        radial-gradient(circle at 55% 49%, transparent 0 18%, rgba(2,2,5,.12) 32%, rgba(2,2,5,.62) 100%),
+        linear-gradient(90deg, transparent 0 50%, rgba(139,92,246,.11) 82%, transparent 100%);
+      pointer-events:none;
+    }
+    .hero-grid-lines{
+      position:absolute; inset:0; opacity:.13; pointer-events:none;
+      background:
+        linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+      background-size:120px 120px;
+      mask-image:linear-gradient(90deg, rgba(0,0,0,.35), transparent 74%);
+    }
+    .hero-content{
+      position:relative;
+      z-index:3;
+      display:grid;
+      grid-template-columns:minmax(320px,.78fr) minmax(480px,1.22fr);
+      gap:20px;
+      align-items:center;
+      min-height:100svh;
+      padding-top:120px;
+      padding-bottom:72px;
+    }
+    .hero-copy{
+      max-width:620px;
+      position:relative;
+      z-index:8;
+      text-shadow:0 4px 34px rgba(0,0,0,.45);
+    }
+    .hero-copy .hero-lede{max-width:580px}
+    .hero-copy h1{font-weight:700}
+    .gradient{
+      background:linear-gradient(100deg,#fff 10%, #eee8ff 56%, #c1a5ff 100%);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .galaxy-map{
+      min-height:650px;
+      position:relative;
+      align-self:stretch;
+      perspective:1000px;
+    }
+    .galaxy-core-glow{
+      position:absolute;
+      left:51%;top:51%;
+      width:150px;height:150px;
+      transform:translate(-50%,-50%);
+      border-radius:50%;
+      background:radial-gradient(circle, rgba(255,247,255,.96) 0 3%, rgba(226,196,255,.74) 7%, rgba(139,92,246,.42) 21%, rgba(63,22,130,.12) 46%, transparent 70%);
+      filter:blur(2px);
+      box-shadow:0 0 80px rgba(139,92,246,.32);
+      pointer-events:none;
+    }
+    .research-node{
+      position:absolute;
+      width:74px;height:74px;
+      border-radius:50%;
+      border:1px solid rgba(244,239,255,.58);
+      background:
+        radial-gradient(circle at 34% 30%, #fff 0 5%, #d9c7ff 8%, #9d74ff 28%, #54239a 54%, #11071d 100%);
+      box-shadow:
+        0 0 18px rgba(196,167,255,.78),
+        0 0 44px rgba(139,92,246,.44);
+      cursor:pointer;
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      z-index:10;
+      transition:transform .28s ease, box-shadow .28s ease;
+      padding:0;
+      text-shadow:0 2px 7px rgba(0,0,0,.42);
+    }
+    .research-node::after{
+      content:"";
+      position:absolute;inset:-14px;
+      border:1px solid rgba(196,167,255,.14);
+      border-radius:50%;
+      opacity:.6;
+      transition:.28s ease;
+    }
+    .research-node:hover{
+      transform:translateY(-3px) scale(1.1);
+      box-shadow:0 0 22px rgba(255,255,255,.55),0 0 68px rgba(139,92,246,.72);
+    }
+    .research-node:hover::after{inset:-21px;opacity:1;border-color:rgba(196,167,255,.32)}
+    .node-number{
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+      font-size:.83rem;font-weight:900;line-height:1;
+    }
+    .node-label{
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+      font-size:.42rem;letter-spacing:.15em;font-weight:800;opacity:.8;margin-top:4px;
+    }
+    .research-node.n1{left:18%;top:24%}
+    .research-node.n2{right:11%;top:21%}
+    .research-node.n3{right:5%;top:55%}
+    .research-node.n4{left:15%;top:61%}
+    .research-node.n5{left:48%;top:8%}
+    .research-node.n6{right:38%;bottom:8%}
+    .hero-credit{
+      position:absolute;right:0;bottom:3px;
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+      font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;
+      color:rgba(255,255,255,.55);
+      text-align:right;
+      max-width:360px;
+    }
+    .hero-scroll{
+      position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
+      z-index:8;display:flex;align-items:center;gap:12px;
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+      color:rgba(255,255,255,.62);
+      font-size:.59rem;letter-spacing:.2em;font-weight:800;
+    }
+    .scroll-line{width:74px;height:1px;background:rgba(196,167,255,.42)}
+    @media(max-width:1020px){
+      .hero-content{grid-template-columns:1fr;padding-top:118px}
+      .galaxy-map{position:absolute;inset:92px 0 35px;min-height:0;opacity:.72}
+      .hero-copy{padding-top:160px;max-width:700px}
+      .hero-copy h1{font-size:clamp(3.7rem,11vw,6rem)}
+    }
+    @media(max-width:700px){
+      .hero-image{background-position:56% center}
+      .hero-vignette{background:
+        linear-gradient(180deg,rgba(2,2,5,.76) 0%,rgba(2,2,5,.32) 28%,rgba(2,2,5,.36) 58%,rgba(2,2,5,.94) 100%),
+        radial-gradient(circle at 55% 48%,transparent 0 20%,rgba(2,2,5,.6) 95%);}
+      .hero-copy{padding-top:190px}
+      .hero-lede{font-size:.98rem}
+      .galaxy-map{opacity:.54;inset:160px -45px 35px}
+      .hero-credit{right:18px;bottom:0}
+      .hero-scroll{display:none}
+      .research-node{width:64px;height:64px}
+    }
+
+    /* --------- section system --------- */
+    section{padding:110px 0;position:relative}
+    .section-kicker{color:#a88cff;text-transform:uppercase;letter-spacing:.18em;font-size:.67rem;font-weight:900}
+    .section-head{display:flex;align-items:end;justify-content:space-between;gap:30px;margin-bottom:36px}
+    h2{margin:8px 0 0;font-size:clamp(2.3rem,5vw,4.4rem);letter-spacing:-.035em;line-height:.96;font-weight:700}
+    .section-intro{max-width:560px;color:#a9a0bc;line-height:1.7;font-size:.95rem}
+
+    /* --------- research atlas --------- */
+    .atlas{
+      border:1px solid var(--line);
+      border-radius:30px;
+      padding:20px;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(139,92,246,.09), transparent 35%),
+        linear-gradient(135deg, rgba(10,7,20,.88), rgba(14,9,34,.76));
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      position:relative;
+      min-height:670px;
+    }
+    .atlas::before{
+      content:"";position:absolute;inset:0;pointer-events:none;
+      background-image:
+        linear-gradient(rgba(196,167,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(196,167,255,.035) 1px, transparent 1px);
+      background-size:42px 42px;
+      mask-image:radial-gradient(circle at 50% 50%, black, transparent 80%);
+    }
+    .atlas-center{
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+      width:200px;height:200px;border-radius:50%;
+      display:grid;place-items:center;text-align:center;
+      background:
+        radial-gradient(circle, rgba(255,255,255,.9) 0 2%, rgba(196,167,255,.76) 4%, rgba(139,92,246,.28) 13%, rgba(66,30,123,.24) 33%, rgba(12,7,28,.03) 70%);
+      box-shadow:0 0 80px rgba(139,92,246,.30);
+      border:1px solid rgba(196,167,255,.18);
+    }
+    .atlas-center span{
+      font-size:.69rem;line-height:1.45;color:#f5f0ff;text-transform:uppercase;
+      font-weight:900;letter-spacing:.14em;
+    }
+    .atlas-ring{
+      position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+      border:1px solid rgba(196,167,255,.15);border-radius:50%;pointer-events:none;
+    }
+    .r1{width:360px;height:190px;transform:translate(-50%,-50%) rotate(-20deg)}
+    .r2{width:560px;height:280px;transform:translate(-50%,-50%) rotate(16deg)}
+    .r3{width:800px;height:420px;transform:translate(-50%,-50%) rotate(-48deg)}
+    .project{
+      position:absolute;width:180px;padding:13px 14px;border:1px solid rgba(196,167,255,.22);
+      border-radius:18px;background:rgba(8,5,19,.72);backdrop-filter:blur(13px);
+      cursor:pointer;transition:.25s ease;z-index:4;
+    }
+    .project:hover{transform:translateY(-4px) scale(1.02);border-color:rgba(196,167,255,.5);box-shadow:0 18px 38px rgba(0,0,0,.35)}
+    .project .dot{width:9px;height:9px;border-radius:50%;background:var(--purple);box-shadow:0 0 16px rgba(139,92,246,.9);display:inline-block;margin-right:7px}
+    .project .id{color:#9288a9;font-size:.61rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}
+    .project h3{font-size:.92rem;margin:7px 0 5px;line-height:1.2}
+    .project p{font-size:.69rem;color:#aaa1ba;line-height:1.45;margin:0}
+    .p1{left:5%;top:15%}.p2{right:7%;top:12%}.p3{right:4%;bottom:15%}.p4{left:5%;bottom:13%}.p5{left:34%;top:5%}.p6{right:33%;bottom:5%}
+    @media(max-width:800px){
+      .atlas{min-height:auto;padding:14px}
+      .atlas-center,.atlas-ring{display:none}
+      .atlas{display:grid;grid-template-columns:1fr;gap:12px}
+      .project{position:relative;left:auto;right:auto;top:auto;bottom:auto;width:auto}
+    }
+
+    /* --------- mission / program arc --------- */
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:stretch}
+    @media(max-width:900px){.split{grid-template-columns:1fr}}
+    .glass{
+      border:1px solid var(--line);border-radius:28px;
+      background:rgba(11,8,23,.72);backdrop-filter:blur(13px);
+      box-shadow:var(--shadow);padding:30px;
+    }
+    .glass h3{font-size:1.2rem;margin:0 0 11px}
+    .glass p{color:#b2a8c1;line-height:1.75;margin:0}
+    .program-path{display:grid;gap:11px;margin-top:24px}
+    .stage{
+      display:grid;grid-template-columns:84px 1fr;gap:15px;align-items:center;
+      padding:13px;border:1px solid rgba(196,167,255,.12);border-radius:17px;
+      background:rgba(255,255,255,.025);
+    }
+    .stage-year{font-size:.64rem;text-transform:uppercase;letter-spacing:.13em;color:#a78bfa;font-weight:900}
+    .stage strong{display:block;font-size:.82rem}
+    .stage span{display:block;color:#8f869f;font-size:.7rem;margin-top:3px;line-height:1.35}
+
+    .photo{
+      width:100%;height:100%;min-height:440px;object-fit:cover;border-radius:28px;
+      border:1px solid var(--line);filter:saturate(.9) contrast(1.03);
+      box-shadow:var(--shadow);
+    }
+
+
+    /* --------- editorial timeline --------- */
+    .timeline-editorial{
+      position:relative;
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:0;
+      padding:26px 0 6px;
+    }
+    .timeline-rule{
+      position:absolute;left:7.5%;right:7.5%;top:70px;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(196,167,255,.45) 14%,rgba(196,167,255,.28) 86%,transparent);
+    }
+    .timeline-stop{
+      position:relative;
+      padding:0 34px;
+    }
+    .timeline-stop + .timeline-stop{border-left:1px solid rgba(196,167,255,.10)}
+    .timeline-index{
+      width:48px;height:48px;border-radius:50%;
+      display:grid;place-items:center;
+      margin:0 0 30px;
+      background:#07060d;
+      border:1px solid rgba(196,167,255,.35);
+      color:#c5abff;
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+      font-size:.68rem;font-weight:900;letter-spacing:.08em;
+      box-shadow:0 0 28px rgba(139,92,246,.16);
+      position:relative;z-index:2;
+    }
+    .timeline-term{
+      color:#a58bff;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+      font-size:.65rem;font-weight:900;
+    }
+    .timeline-copy h3{
+      font-size:clamp(1.7rem,3vw,2.45rem);
+      margin:9px 0 5px;
+      font-weight:700;
+      letter-spacing:-.025em;
+    }
+    .timeline-copy p{
+      margin:0 0 11px;
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+      color:#ded5ed;
+      font-size:.77rem;
+      font-weight:700;
+    }
+    .timeline-copy span{
+      display:block;
+      color:#a79eb3;
+      line-height:1.7;
+      font-size:.88rem;
+    }
+    @media(max-width:900px){
+      .timeline-editorial{grid-template-columns:1fr;gap:24px;padding-top:10px}
+      .timeline-rule{left:24px;right:auto;top:0;bottom:0;width:1px;height:auto;background:linear-gradient(180deg,transparent,rgba(196,167,255,.38) 10%,rgba(196,167,255,.18) 90%,transparent)}
+      .timeline-stop{padding:0 0 28px 82px}
+      .timeline-stop + .timeline-stop{border-left:0}
+      .timeline-index{position:absolute;left:0;top:0;margin:0}
+    }
+
+
+    /* --------- research-journey timeline --------- */
+    .timeline-journey{
+      position:relative;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:1px;
+      border-top:1px solid rgba(196,167,255,.20);
+      border-left:1px solid rgba(196,167,255,.10);
+      background:rgba(196,167,255,.10);
+    }
+    .timeline-journey::before{
+      content:"";
+      position:absolute;
+      left:4.5%; right:4.5%; top:58px;
+      height:1px;
+      background:linear-gradient(90deg,transparent,rgba(196,167,255,.48),transparent);
+      pointer-events:none;
+    }
+    .journey-node{
+      min-height:290px;
+      padding:22px 22px 24px;
+      background:linear-gradient(180deg,rgba(9,7,18,.94),rgba(13,9,28,.88));
+      position:relative;
+      transition:background .25s ease, transform .25s ease;
+    }
+    .journey-node:hover{
+      background:linear-gradient(180deg,rgba(18,12,39,.96),rgba(10,7,22,.94));
+      transform:translateY(-4px);
+      z-index:3;
+    }
+    .journey-number{
+      width:54px;height:54px;
+      display:grid;place-items:center;
+      border-radius:50%;
+      background:#07050c;
+      border:1px solid rgba(196,167,255,.40);
+      color:#c8b1ff;
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+      font-size:.68rem;font-weight:900;
+      position:relative;z-index:2;
+      box-shadow:0 0 28px rgba(139,92,246,.15);
+      margin-bottom:28px;
+    }
+    .journey-term{
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+      color:#a58bff;
+      font-size:.62rem;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.13em;
+      line-height:1.4;
+    }
+    .journey-node h3{
+      font-family:"Times New Roman",Times,serif;
+      font-size:1.63rem;
+      letter-spacing:-.025em;
+      line-height:1.02;
+      margin:8px 0 9px;
+    }
+    .journey-node p{
+      margin:0;
+      color:#a9a0b4;
+      line-height:1.6;
+      font-size:.82rem;
+    }
+    @media(max-width:1000px){
+      .timeline-journey{grid-template-columns:repeat(2,1fr)}
+      .timeline-journey::before{display:none}
+    }
+    @media(max-width:620px){
+      .timeline-journey{grid-template-columns:1fr}
+      .journey-node{min-height:auto}
+    }
+
+    /* --------- in-site FAQ --------- */
+    .faq-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .faq-grid details{
+      border:1px solid rgba(196,167,255,.16);
+      background:rgba(10,7,20,.70);
+      border-radius:18px;
+      padding:0 18px;
+      transition:.24s ease;
+    }
+    .faq-grid details:hover,.faq-grid details[open]{
+      border-color:rgba(196,167,255,.32);
+      background:rgba(16,10,32,.82);
+    }
+    .faq-grid summary{
+      list-style:none;
+      cursor:pointer;
+      padding:20px 24px 20px 0;
+      color:#f0ebf8;
+      font-size:1rem;
+      font-weight:700;
+      position:relative;
+    }
+    .faq-grid summary::-webkit-details-marker{display:none}
+    .faq-grid summary::after{
+      content:"+";
+      position:absolute;right:2px;top:17px;
+      color:#b99aff;
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+      font-size:1.15rem;
+    }
+    .faq-grid details[open] summary::after{content:"−"}
+    .faq-grid details p{
+      color:#aaa0b7;
+      line-height:1.72;
+      font-size:.83rem;
+      margin:0 0 20px;
+      max-width:620px;
+    }
+    @media(max-width:780px){.faq-grid{grid-template-columns:1fr}}
+
+    /* --------- staff / people --------- */
+    .staff-grid{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+    }
+    .staff-card{
+      border:1px solid rgba(196,167,255,.15);
+      border-radius:21px;
+      padding:23px;
+      background:linear-gradient(180deg,rgba(12,8,24,.80),rgba(7,5,14,.92));
+      min-height:260px;
+      display:flex;
+      flex-direction:column;
+    }
+    .staff-card.featured{
+      border-color:rgba(196,167,255,.30);
+      background:
+        radial-gradient(circle at 80% 10%,rgba(139,92,246,.18),transparent 36%),
+        linear-gradient(180deg,rgba(18,11,39,.86),rgba(7,5,14,.94));
+    }
+    .staff-role{
+      color:#9f84fa;
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+      font-size:.61rem;
+      font-weight:900;
+      letter-spacing:.13em;
+      text-transform:uppercase;
+      line-height:1.5;
+    }
+    .staff-card h3{
+      margin:8px 0 10px;
+      font-size:1.65rem;
+      line-height:1;
+      letter-spacing:-.025em;
+    }
+    .staff-card p{
+      color:#a9a0b3;
+      line-height:1.62;
+      font-size:.79rem;
+      margin:0 0 18px;
+    }
+    .staff-card a{
+      margin-top:auto;
+      color:#c3a8ff;
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+      font-size:.67rem;
+      font-weight:800;
+    }
+    .staff-card a:hover{color:#fff}
+    @media(max-width:980px){.staff-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.staff-grid{grid-template-columns:1fr}}
+
+    /* --------- manifesto / observatory note --------- */
+    .manifesto{
+      text-align:center; max-width:930px; margin:0 auto;
+      padding:30px 0;
+    }
+    .manifesto p{
+      font-size:clamp(1.55rem,3.2vw,2.8rem);line-height:1.28;letter-spacing:-.025em;
+      color:#ece7f7;margin:20px 0 0;font-weight:650;
+    }
+    .manifesto em{color:#b693ff;font-style:normal}
+
+    /* --------- CTA/footer --------- */
+    .footer-card{
+      border:1px solid var(--line);border-radius:30px;padding:34px;
+      background:
+        radial-gradient(circle at 85% 20%, rgba(139,92,246,.18), transparent 30%),
+        linear-gradient(135deg, rgba(15,10,31,.86), rgba(7,5,14,.9));
+      box-shadow:var(--shadow);
+      display:flex;justify-content:space-between;gap:30px;align-items:center;
+    }
+    @media(max-width:800px){.footer-card{flex-direction:column;align-items:flex-start}}
+    .footer-card h3{font-size:clamp(1.7rem,3vw,2.5rem);margin:0 0 7px;letter-spacing:-.035em}
+    .footer-card p{color:#a9a0b8;max-width:650px;line-height:1.6;margin:0}
+    footer{padding:55px 0 70px;color:#777089;font-size:.68rem}
+    footer .footer-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    footer img{width:44px;height:44px;object-fit:cover;border-radius:50%;vertical-align:middle;margin-right:9px}
+
+    /* --------- project modal --------- */
+    .modal{
+      position:fixed;inset:0;display:none;place-items:center;z-index:100;
+      padding:20px;background:rgba(2,1,6,.72);backdrop-filter:blur(12px)
+    }
+    .modal.open{display:grid}
+    .modal-card{
+      width:min(760px,100%);max-height:min(84svh,760px);overflow:auto;
+      border:1px solid rgba(196,167,255,.35);border-radius:27px;
+      background:linear-gradient(180deg,rgba(18,12,40,.97),rgba(7,5,14,.98));
+      box-shadow:0 35px 100px rgba(0,0,0,.6);padding:26px;
+      position:relative;
+    }
+    .close{
+      position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;
+      border:1px solid var(--line);background:rgba(255,255,255,.05);color:#fff;cursor:pointer
+    }
+    .modal-id{font-size:.66rem;color:#a88cff;font-weight:900;text-transform:uppercase;letter-spacing:.16em}
+    .modal-card h3{font-size:2.25rem;line-height:1;margin:8px 0 14px;letter-spacing:-.04em}
+    .modal-card .summary{color:#c0b6ce;line-height:1.7}
+    .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+    .meta{padding:12px;border:1px solid rgba(196,167,255,.12);border-radius:14px;background:rgba(255,255,255,.025)}
+    .meta small{display:block;color:#81788f;font-size:.59rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800;margin-bottom:4px}
+    .meta span{font-size:.76rem;color:#ddd7e8}
+    .modal-note{margin-top:18px;padding:12px 14px;border-left:2px solid var(--purple);background:rgba(139,92,246,.07);color:#bdb3cb;font-size:.72rem;line-height:1.55}
+  </style>
+</head>
+
+<body>
+  <canvas id="starfield" aria-hidden="true"></canvas>
+  <div class="nebula n1"></div>
+  <div class="nebula n2"></div>
+
+  <nav class="nav" aria-label="Primary navigation">
+    <div class="nav-inner">
+      <a class="brand" href="#top" aria-label="GEVIP home">
+        <img src="https://sites.utexas.edu/vip/wp-content/uploads/sites/5342/2022/03/cropped-GEVIP-LOGO.png" alt="GEVIP spiral galaxy logo">
+        <span class="brand-copy">
+          <span class="brand-title">GEVIP</span>
+          <span class="brand-sub">Galaxy Evolution VIP</span>
+        </span>
+      </a>
+      <div class="nav-links">
+        <a href="#projects">Research</a>
+        <a href="#mission">Mission</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#journey">Journey</a>
+        <a href="https://sites.utexas.edu/vip/faq-2/" target="_blank" rel="noopener">FAQ ↗</a>
+        <a href="https://sites.utexas.edu/vip/staff-list-2/" target="_blank" rel="noopener">Staff ↗</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-cosmos">
+        <div class="hero-image"
+             role="img"
+             aria-label="James Webb Space Telescope image of the face-on barred spiral galaxy NGC 1512">
+        </div>
+
+        <div class="hero-vignette"></div>
+        <div class="hero-grid-lines" aria-hidden="true"></div>
+
+        <div class="hero-content container">
+          <div class="hero-copy">
+            <div class="eyebrow"><span class="pulse"></span> UT Austin • Galaxy Evolution</div>
+            <h1><span class="gradient">GEVIP.</span><br>Explore what<br>comes next.</h1>
+            <p class="hero-lede">
+              Original undergraduate research into how galaxies form, evolve, and change across cosmic time—
+              from first questions to final capstone.
+            </p>
+            <div class="hero-actions">
+              <a class="btn primary" href="#projects">Explore senior research →</a>
+              <a class="btn" href="#mission">Discover GEVIP</a>
+            </div>
+            <div class="micro">Move your cursor across the galaxy • select a research beacon</div>
+          </div>
+
+          <div class="galaxy-map" aria-label="Interactive GEVIP research galaxy">
+            <div class="galaxy-core-glow"></div>
+
+            <button class="research-node n1" data-project="0" aria-label="Open research beacon 1">
+              <span class="node-number">01</span><span class="node-label">RESEARCH</span>
+            </button>
+            <button class="research-node n2" data-project="1" aria-label="Open research beacon 2">
+              <span class="node-number">02</span><span class="node-label">RESEARCH</span>
+            </button>
+            <button class="research-node n3" data-project="2" aria-label="Open research beacon 3">
+              <span class="node-number">03</span><span class="node-label">RESEARCH</span>
+            </button>
+            <button class="research-node n4" data-project="3" aria-label="Open research beacon 4">
+              <span class="node-number">04</span><span class="node-label">RESEARCH</span>
+            </button>
+            <button class="research-node n5" data-project="4" aria-label="Open research beacon 5">
+              <span class="node-number">05</span><span class="node-label">RESEARCH</span>
+            </button>
+            <button class="research-node n6" data-project="5" aria-label="Open research beacon 6">
+              <span class="node-number">06</span><span class="node-label">RESEARCH</span>
+            </button>
+
+            <div class="hero-credit">
+              Webb image: NGC 1512 • NASA / ESA / CSA / STScI / PHANGS
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-scroll container">
+          <span>SCROLL TO DISCOVER</span>
+          <span class="scroll-line"></span>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">Research atlas</div>
+            <h2>Meet the science.</h2>
+          </div>
+          <p class="section-intro">
+            Replace each beacon with the actual senior projects from the previous cohort. The interaction is already wired:
+            click a project to open its research story without leaving the page.
+          </p>
+        </div>
+
+        <div class="atlas">
+          <div class="atlas-ring r1"></div>
+          <div class="atlas-ring r2"></div>
+          <div class="atlas-ring r3"></div>
+          <div class="atlas-center"><span>Galaxy<br>Evolution<br>VIP</span></div>
+
+          <article class="project p1" data-project="0">
+            <div><span class="dot"></span><span class="id">Senior project 01</span></div>
+            <h3>Project title goes here</h3>
+            <p>Click to open the research summary, student, datasets, and outcomes.</p>
+          </article>
+
+          <article class="project p2" data-project="1">
+            <div><span class="dot"></span><span class="id">Senior project 02</span></div>
+            <h3>Project title goes here</h3>
+            <p>Designed as a research beacon inside the galaxy rather than a static card.</p>
+          </article>
+
+          <article class="project p3" data-project="2">
+            <div><span class="dot"></span><span class="id">Senior project 03</span></div>
+            <h3>Project title goes here</h3>
+            <p>Ideal for a JWST image, plot, poster thumbnail, or abstract.</p>
+          </article>
+
+          <article class="project p4" data-project="3">
+            <div><span class="dot"></span><span class="id">Senior project 04</span></div>
+            <h3>Project title goes here</h3>
+            <p>Use a concise one-line description here to make the field scannable.</p>
+          </article>
+
+          <article class="project p5" data-project="4">
+            <div><span class="dot"></span><span class="id">Senior project 05</span></div>
+            <h3>Project title goes here</h3>
+            <p>Long-form details open only when a visitor chooses to investigate.</p>
+          </article>
+
+          <article class="project p6" data-project="5">
+            <div><span class="dot"></span><span class="id">Senior project 06</span></div>
+            <h3>Project title goes here</h3>
+            <p>The visual language can scale to more projects by adding another data object.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="mission">
+      <div class="container split">
+        <div class="glass">
+          <div class="section-kicker">Mission</div>
+          <h2 style="margin-top:10px">Learn the craft.<br>Do the science.</h2>
+          <p style="margin-top:18px">
+            GEVIP is an immersive, multi-year research program that brings together students across astronomy,
+            physics, and related fields. Students learn astronomical data analysis, read scientific literature,
+            develop a capstone proposal, and carry out novel research with mentorship from the PI, postdocs,
+            graduate students, and senior undergraduates.
+          </p>
+
+          <div class="program-path" id="journey">
+            <div class="stage">
+              <div class="stage-year">Sophomore</div>
+              <div><strong>AST211G • VIP-I</strong><span>Training modules in astronomical data analysis with Python + literature-driven exploration.</span></div>
+            </div>
+            <div class="stage">
+              <div class="stage-year">Junior</div>
+              <div><strong>AST212G • VIP-II</strong><span>Turn a scientific interest into a “capstone” research proposal.</span></div>
+            </div>
+            <div class="stage">
+              <div class="stage-year">Final 3 semesters</div>
+              <div><strong>AST222G / 322G • Capstone</strong><span>Execute the project using state-of-the-art research datasets, primarily involving JWST data.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <img
+          class="photo"
+          src="https://sites.utexas.edu/vip/wp-content/uploads/sites/5342/2025/02/GeVIP-Group-Photo-Sp2025-1-1024x399.jpg"
+          alt="Spring 2025 GEVIP group"
+          loading="lazy"
+        />
+      </div>
+    </section>
+
+
+    <section id="timeline">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">The GEVIP timeline</div>
+            <h2>From first question<br>to final result.</h2>
+          </div>
+          <p class="section-intro">
+            Follow the path a student takes through GEVIP—from applying and learning the tools of astronomy
+            to developing an independent capstone and sharing the result with the wider scientific community.
+          </p>
+        </div>
+
+        <div class="timeline-journey">
+          <article class="journey-node">
+            <div class="journey-number">01</div>
+            <div class="journey-term">Fall • Application</div>
+            <h3>Enter the orbit.</h3>
+            <p>Applications typically open in early October, with decisions announced in November.</p>
+          </article>
+
+          <article class="journey-node">
+            <div class="journey-number">02</div>
+            <div class="journey-term">Spring • Sophomore</div>
+            <h3>Learn the tools.</h3>
+            <p>AST211G • VIP-I introduces astronomical data analysis with Python and research workflows.</p>
+          </article>
+
+          <article class="journey-node">
+            <div class="journey-number">03</div>
+            <div class="journey-term">Spring • Sophomore</div>
+            <h3>Start together.</h3>
+            <p>Training leads into a collaborative starter project, giving new members their first taste of research.</p>
+          </article>
+
+          <article class="journey-node">
+            <div class="journey-number">04</div>
+            <div class="journey-term">Fall • Junior</div>
+            <h3>Find the question.</h3>
+            <p>Read papers, explore scientific interests, and begin turning curiosity into a tractable research problem.</p>
+          </article>
+
+          <article class="journey-node">
+            <div class="journey-number">05</div>
+            <div class="journey-term">Fall • Junior</div>
+            <h3>Write the proposal.</h3>
+            <p>AST212G • VIP-II culminates in an individual capstone proposal: the question, method, data, and plan.</p>
+          </article>
+
+          <article class="journey-node">
+            <div class="journey-number">06</div>
+            <div class="journey-term">Final 3 semesters</div>
+            <h3>Do the research.</h3>
+            <p>AST222G / 322G • Capstone carries the project from analysis to interpretation using research-group datasets.</p>
+          </article>
+
+          <article class="journey-node">
+            <div class="journey-number">07</div>
+            <div class="journey-term">Spring • Undergraduate Research Forum</div>
+            <h3>Show the work.</h3>
+            <p>Members present their research at the annual Undergraduate Research Forum and learn to communicate science.</p>
+          </article>
+
+          <article class="journey-node">
+            <div class="journey-number">08</div>
+            <div class="journey-term">Senior year • Beyond UT</div>
+            <h3>Take it further.</h3>
+            <p>Students pursuing graduate school are encouraged to present at AAS in their senior fall; projects may also become an AAS Research Note or paper.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="faq">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">Frequently asked</div>
+            <h2>Questions worth<br>asking early.</h2>
+          </div>
+          <p class="section-intro">
+            The old FAQ has been brought into the new site so visitors can move from inspiration to practical details
+            without being sent back to a different visual world.
+          </p>
+        </div>
+
+        <div class="faq-grid">
+          <details open>
+            <summary>How is GEVIP structured?</summary>
+            <p>Members typically apply in the fall and join during sophomore spring. Sophomores work through training modules and a group starter project; during junior fall they read papers and develop an individual Capstone Project proposal; students then work on the Capstone until graduation.</p>
+          </details>
+          <details>
+            <summary>Who is eligible to apply?</summary>
+            <p>Current sophomores with physics- and/or astronomy-related majors are typical applicants. Juniors with research experience may also be considered, particularly transfer students.</p>
+          </details>
+          <details>
+            <summary>Do I need coding experience?</summary>
+            <p>Some Python experience and astronomical background are helpful, but not required. The first-semester coding modules are designed to bring members to a level where they can complete their first project and develop their own future project.</p>
+          </details>
+          <details>
+            <summary>What data does GEVIP work with?</summary>
+            <p>GEVIP works with a variety of datasets, including observations from JWST, Euclid, and HET.</p>
+          </details>
+          <details>
+            <summary>How much time does research take?</summary>
+            <p>GEVIP is a for-credit research group. Each credit hour corresponds to about three hours of work per week, and members attend at least two meetings each week.</p>
+          </details>
+          <details>
+            <summary>What do students produce?</summary>
+            <p>Members are expected to develop and conduct an individual Capstone Project and present at the Undergraduate Research Forum every spring. Students pursuing graduate school are encouraged to present at AAS in their senior fall; a Capstone can also lead to an AAS Research Note or a published paper.</p>
+          </details>
+          <details>
+            <summary>What kind of mentorship is available?</summary>
+            <p>Sophomores are paired with junior or senior mentors and a graduate student for their first project. Upperclassmen receive guidance from graduate students or postdocs on their Capstone, with regular Wednesday workshops for research problems and discussion.</p>
+          </details>
+          <details>
+            <summary>What makes GEVIP different?</summary>
+            <p>The vertically integrated structure gives undergraduates direct contact with graduate students, postdocs, the PI, and peers while they develop independent research interests and scientific communication skills.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section id="staff">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <div class="section-kicker">The people</div>
+            <h2>Research is<br>never solo.</h2>
+          </div>
+          <p class="section-intro">
+            Meet the faculty, postdoctoral researchers, and graduate students who form the vertically integrated
+            mentoring structure behind GEVIP.
+          </p>
+        </div>
+
+        <div class="staff-grid">
+          <article class="staff-card featured">
+            <div class="staff-role">Professor • GEVIP Program PI</div>
+            <h3>Steven Finkelstein</h3>
+            <p>Broad interests in the formation and evolution of the first stars, galaxies, and supermassive black holes.</p>
+            <a href="mailto:stevenf@astro.as.utexas.edu">stevenf@astro.as.utexas.edu ↗</a>
+          </article>
+
+          <article class="staff-card">
+            <div class="staff-role">Postdoctoral Fellow</div>
+            <h3>Anthony Taylor</h3>
+            <p>Studies early galaxies and their supermassive black holes, with a focus on broad-line AGN using JWST/NIRSpec.</p>
+            <a href="mailto:anthony.taylor@austin.utexas.edu">anthony.taylor@austin.utexas.edu ↗</a>
+          </article>
+
+          <article class="staff-card">
+            <div class="staff-role">Cosmic Frontier Center Fellow • Postdoctoral Fellow</div>
+            <h3>Tiger Hsiao</h3>
+            <p>Investigates the universe’s first light, first stars and galaxies, with particular interest in early chemical abundances.</p>
+            <a href="mailto:tiger.hsiao@utexas.edu">tiger.hsiao@utexas.edu ↗</a>
+          </article>
+
+          <article class="staff-card">
+            <div class="staff-role">Graduate Student</div>
+            <h3>Óscar A. Chávez Ortiz</h3>
+            <p>Studies Lyman-alpha emitting galaxies at z ≈ 2–3.5 and the physical processes controlling the escape of Lyman-alpha photons.</p>
+            <a href="mailto:chavezoscar009@utexas.edu">chavezoscar009@utexas.edu ↗</a>
+          </article>
+
+          <article class="staff-card">
+            <div class="staff-role">Graduate Student</div>
+            <h3>Natalia Villanueva</h3>
+            <p>Studies morphological evolution and spatially resolved galaxy properties using JWST and Euclid imaging.</p>
+            <a href="mailto:nataliavillanueva@utexas.edu">nataliavillanueva@utexas.edu ↗</a>
+          </article>
+
+          <article class="staff-card">
+            <div class="staff-role">Graduate Student</div>
+            <h3>Ansh Gupta</h3>
+            <p>Studies black holes in the early universe using James Webb Space Telescope data and their connection to host galaxies.</p>
+            <a href="mailto:anshrg@utexas.edu">anshrg@utexas.edu ↗</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="manifesto">
+          <div class="section-kicker">The point of the program</div>
+          <p>
+            GEVIP is not just a course with a final project.
+            It is a place to <em>experience what it means to be a scientist</em>—including
+            the part where the answer is not known yet.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="footer-card">
+          <div>
+            <h3>Look deeper.</h3>
+            <p>
+              The front door of the site is designed to lead naturally into the research, the program journey,
+              practical questions, and the people who make the work possible.
+            </p>
+          </div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap">
+            <a class="btn primary" href="#projects">Current projects ↓</a>
+            <a class="btn" href="#faq">Read the FAQ ↓</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <div>
+        <img src="https://sites.utexas.edu/vip/wp-content/uploads/sites/5342/2022/03/cropped-GEVIP-LOGO.png" alt="">
+        <span>GEVIP • Galaxy Evolution VIP • The University of Texas at Austin</span>
+      </div>
+      <div>At UT Austin… “What starts here changes the world.”</div>
+    </div>
+  </footer>
+
+  <div class="modal" id="projectModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <button class="close" id="closeModal" aria-label="Close project">×</button>
+      <div class="modal-id" id="modalId">Senior project</div>
+      <h3 id="modalTitle">Project title goes here</h3>
+      <p class="summary" id="modalSummary"></p>
+      <div class="meta-grid">
+        <div class="meta"><small>Researcher</small><span id="modalStudent"></span></div>
+        <div class="meta"><small>Data / Method</small><span id="modalData"></span></div>
+        <div class="meta"><small>Research theme</small><span id="modalTheme"></span></div>
+        <div class="meta"><small>Outcome</small><span id="modalOutcome"></span></div>
+      </div>
+      <div class="modal-note">
+        Prototype note: the individual senior-project entries below are intentionally placeholders because the supplied
+        page source did not contain those project titles/details. Replace the objects in the <code>projects</code> array
+        in the script; the interface will update automatically.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /*
+      Content note:
+      The FAQ and Staff sections below are based on the current GEVIP site information.
+      Timeline wording follows the program progression described by the source site and its FAQ.
+    */
+    /* =========================================================
+       GEVIP RESEARCH DATA
+       Replace these six entries with the actual senior projects.
+       Add more objects if needed; the modal logic is data-driven.
+       ========================================================= */
+    const projects = [
+      {
+        id: "Senior project 01",
+        title: "Project title goes here",
+        student: "Student name",
+        data: "JWST imaging / spectroscopy",
+        theme: "Galaxy evolution",
+        outcome: "Poster / paper / capstone",
+        summary: "Add a 2–4 sentence plain-language summary of the research question, what was measured, and what the student discovered."
+      },
+      {
+        id: "Senior project 02",
+        title: "Project title goes here",
+        student: "Student name",
+        data: "JWST + archival data",
+        theme: "Early galaxies",
+        outcome: "Poster / paper / capstone",
+        summary: "Add the scientific motivation and one or two headline results. Keep the first layer readable; deeper material can be linked from the modal."
+      },
+      {
+        id: "Senior project 03",
+        title: "Project title goes here",
+        student: "Student name",
+        data: "Imaging / spectroscopy",
+        theme: "Star formation",
+        outcome: "Poster / paper / capstone",
+        summary: "Use this section for a concise, visitor-friendly abstract. A future version can add a full-screen figure gallery."
+      },
+      {
+        id: "Senior project 04",
+        title: "Project title goes here",
+        student: "Student name",
+        data: "JWST dataset",
+        theme: "Galaxy populations",
+        outcome: "Poster / paper / capstone",
+        summary: "Describe the scientific question and why it matters for understanding how galaxies formed and changed over cosmic time."
+      },
+      {
+        id: "Senior project 05",
+        title: "Project title goes here",
+        student: "Student name",
+        data: "Spectroscopy / photometry",
+        theme: "Reionization",
+        outcome: "Poster / paper / capstone",
+        summary: "A strong entry can include a tiny visual, a one-line research question, and a short explanation of the main finding."
+      },
+      {
+        id: "Senior project 06",
+        title: "Project title goes here",
+        student: "Student name",
+        data: "Multi-survey analysis",
+        theme: "Cosmic history",
+        outcome: "Poster / paper / capstone",
+        summary: "This is ready to become another project beacon as the site grows, without changing the overall page structure."
+      }
+    ];
+
+    const modal = document.getElementById("projectModal");
+    const closeModal = document.getElementById("closeModal");
+
+    function openProject(index){
+      const p = projects[index];
+      document.getElementById("modalId").textContent = p.id;
+      document.getElementById("modalTitle").textContent = p.title;
+      document.getElementById("modalSummary").textContent = p.summary;
+      document.getElementById("modalStudent").textContent = p.student;
+      document.getElementById("modalData").textContent = p.data;
+      document.getElementById("modalTheme").textContent = p.theme;
+      document.getElementById("modalOutcome").textContent = p.outcome;
+      modal.classList.add("open");
+      closeModal.focus();
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeProject(){
+      modal.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    document.querySelectorAll("[data-project]").forEach(el=>{
+      el.addEventListener("click",()=>openProject(Number(el.dataset.project)));
+    });
+
+    closeModal.addEventListener("click", closeProject);
+    modal.addEventListener("click", e=>{ if(e.target === modal) closeProject(); });
+    document.addEventListener("keydown", e=>{ if(e.key === "Escape") closeProject(); });
+
+    // ---------- star field ----------
+    const canvas = document.getElementById("starfield");
+    const ctx = canvas.getContext("2d");
+    let stars = [];
+    let width = 0, height = 0, dpr = 1;
+
+    function resizeStarfield(){
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+
+      const count = Math.min(260, Math.max(120, Math.floor((width*height)/8000)));
+      stars = Array.from({length:count},()=>({
+        x:Math.random()*width,
+        y:Math.random()*height,
+        r:Math.random()*1.15 + .18,
+        a:Math.random()*.7 + .2,
+        tw:Math.random()*1.6 + .4,
+        phase:Math.random()*Math.PI*2,
+        speed:(Math.random()-.5)*.018
+      }));
+    }
+
+    let t = 0;
+    function drawStarfield(){
+      t += .012;
+      ctx.clearRect(0,0,width,height);
+
+      // distant dust
+      for(let i=0;i<stars.length;i++){
+        const s = stars[i];
+        s.phase += s.speed;
+        const alpha = s.a * (.72 + Math.sin(t*s.tw + s.phase)*.28);
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(226,215,255,${Math.max(.04,alpha)})`;
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+        ctx.fill();
+      }
+
+      // sparse "galaxy" smudges in the background
+      for(let i=0;i<5;i++){
+        const x = (width*(0.13+i*.19) + Math.sin(t*.18+i)*70) % width;
+        const y = height*(0.18 + ((i*0.17)%0.62));
+        const g = ctx.createRadialGradient(x,y,0,x,y,95+i*18);
+        g.addColorStop(0,"rgba(163,117,255,.08)");
+        g.addColorStop(1,"rgba(163,117,255,0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(x-140,y-140,280,280);
+      }
+
+      requestAnimationFrame(drawStarfield);
+    }
+
+    resizeStarfield();
+    drawStarfield();
+    window.addEventListener("resize", resizeStarfield);
+
+    // Very subtle cursor parallax on the real galaxy image.
+    const heroImage = document.querySelector(".hero-image");
+    window.addEventListener("pointermove", (e)=>{
+      if (!heroImage || window.innerWidth < 760) return;
+      const x = (e.clientX/window.innerWidth-.5);
+      const y = (e.clientY/window.innerHeight-.5);
+      heroImage.style.transform = `scale(1.045) translate(${x*-0.8}%, ${y*-0.6}%)`;
+    });
+    window.addEventListener("pointerleave",()=>{
+      if (heroImage) heroImage.style.transform = "scale(1.03)";
+    });
+  </script>
+</body>
+</html>
